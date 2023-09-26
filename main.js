@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const showAllButton = document.getElementById('showAll');
     const showCompletedButton = document.getElementById('showCompleted');
     const showNotCompletedButton = document.getElementById('showNotCompleted');
-    const searchInput = document.getElementById('searchInput'); // Elemento de entrada de búsqueda
+    const searchInput = document.getElementById('searchInput');
 
 
     handleAddTodo.addEventListener('click', () => {
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             li.removeChild(span);
             li.removeChild(editButton);
-            li.removeChild(editPriorityButton); // Elimina el botón de edición de prioridad existente
+            li.removeChild(editPriorityButton);
             li.appendChild(prioritySelectEdit);
             prioritySelectEdit.focus();
         });
@@ -173,7 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Event listeners para los botones de filtrado
     searchInput.addEventListener('input', () => {
         searchKeyword = searchInput.value.trim().toLowerCase();
         uploadTodosList();
