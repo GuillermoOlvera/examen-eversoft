@@ -1,5 +1,5 @@
 // Constante para el nombre del Local Storage
-const PASSWORD_LOCALSTORAGE = 'todos-list';
+const LOCAL_STORAGE_KEY = 'todos-list';
 
 // Función principal que se ejecuta cuando el contenido DOM está listo
 document.addEventListener("DOMContentLoaded", () => {
@@ -17,8 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const showNotCompletedButton = document.getElementById('showNotCompleted');
     const searchInput = document.getElementById('searchInput');
 
-    // Agregar evento para agregar una nueva tarea
-    handleAddTodo.addEventListener('click', () => {
+
+    const handleAddButtonClick = () => {
         const todoText = inputNewTodo.value.trim();
         if (!todoText) return;
 
@@ -35,84 +35,88 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Guardar la lista de tareas en el Local Storage y actualizar la vista
         saveTodosInLocalStorage();
-        uploadTodosList();
-    });
+        filterTodosAndRender();
+    }
+
+    // Agregar evento para agregar una nueva tarea
+    handleAddTodo.addEventListener('click', handleAddButtonClick);
 
     // Función para obtener la lista de tareas desde el Local Storage
-    const getTodos = () => {
-        const list = JSON.parse(localStorage.getItem(PASSWORD_LOCALSTORAGE));
-        return list || [];
+    const getTodosFromLocalStorage = () => {
+        const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+        return storedTodos || [];
     };
 
     // Función para guardar la lista de tareas en el Local Storage
     const saveTodosInLocalStorage = () => {
-        localStorage.setItem(PASSWORD_LOCALSTORAGE, JSON.stringify(todos));
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos));
     };
 
     // Función para eliminar una tarea
-    const deleteTodo = (index) => {
+    const deleteTodoAtIndex = (index) => {
         if (!confirm('¿Eliminar tarea?')) return;
         todos.splice(index, 1);
         saveTodosInLocalStorage();
-        uploadTodosList();
+        filterTodosAndRender();
     };
 
     // Función para cambiar el estado de una tarea (completada o no)
-    const toogleTodoStatus = (index, checkbox) => {
+    const toggleTodoStatusAtIndex = (index, checkbox) => {
         todos[index].finished = checkbox.checked;
         saveTodosInLocalStorage();
-        uploadTodosList();
+        filterTodosAndRender();
     };
 
     // Función para editar una tarea
-    const editTodo = (index, editInput) => {
+    const editTodoAtIndex = (index, editInput) => {
         const updatedText = editInput.value.trim();
         if (!updatedText) return;
 
         todos[index].todo = updatedText;
         saveTodosInLocalStorage();
-        uploadTodosList();
+        filterTodosAndRender();
     };
 
     // Función para editar la prioridad de una tarea
-    const editPriority = (index, prioritySelect) => {
+    const editPriorityAtIndex = (index, prioritySelect) => {
         const updatedPriority = prioritySelect.value;
         todos[index].priority = updatedPriority;
         saveTodosInLocalStorage();
-        uploadTodosList();
+        filterTodosAndRender();
     };
 
     // Función para crear un elemento de tarea en el DOM
     const createTodoElement = (todo, index) => {
-        const li = document.createElement('li');
-
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = todo.finished;
-        checkbox.addEventListener('change', () => toogleTodoStatus(index, checkbox));
-
-        const span = document.createElement('span');
-        span.textContent = todo.todo;
-
+        const listItem = document.createElement('li');
+        const todoCheckbox = document.createElement('input');
+        const todoText = document.createElement('span');
         const editButton = document.createElement('button');
+        const editPriorityButton = document.createElement('button');
+        const deleteButton = document.createElement('a');
+
+        // Configurar elementos y eventos aquí
+        todoCheckbox.type = 'checkbox';
+        todoCheckbox.checked = todo.finished;
+        todoCheckbox.addEventListener('change', () => toggleTodoStatusAtIndex(index, todoCheckbox));
+
+        todoText.textContent = todo.todo;
+
         editButton.textContent = 'Editar';
         editButton.addEventListener('click', () => {
-            const editInput = document.createElement('input');
-            editInput.type = 'text';
-            editInput.value = todo.todo;
-            editInput.addEventListener('keydown', (event) => {
+            editPriorityButton.type = 'text';
+            editPriorityButton.value = todo.todo;
+            editPriorityButton.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
-                    editTodo(index, editInput);
+                    editTodoAtIndex(index, editPriorityButton);
                 }
             });
 
-            li.removeChild(span);
-            li.removeChild(editButton);
-            li.appendChild(editInput);
-            editInput.focus();
+            listItem.removeChild(todoText);
+            listItem.removeChild(editButton);
+            listItem.appendChild(editPriorityButton);
+            editPriorityButton.focus();
         });
 
-        const editPriorityButton = document.createElement('button');
         editPriorityButton.textContent = 'Editar Prioridad';
         editPriorityButton.addEventListener('click', () => {
             const prioritySelectEdit = document.createElement('select');
@@ -125,44 +129,42 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             prioritySelectEdit.value = todo.priority;
             prioritySelectEdit.addEventListener('change', () => {
-                editPriority(index, prioritySelectEdit);
+                editPriorityAtIndex(index, prioritySelectEdit);
             });
 
-            li.removeChild(span);
-            li.removeChild(editButton);
-            li.removeChild(editPriorityButton);
-            li.appendChild(prioritySelectEdit);
+            listItem.removeChild(todoText);
+            listItem.removeChild(editButton);
+            listItem.removeChild(editPriorityButton);
+            listItem.appendChild(prioritySelectEdit);
             prioritySelectEdit.focus();
         });
 
-
-        const deleteButton = document.createElement('a');
         deleteButton.classList.add('delete');
         deleteButton.innerHTML = "&times;";
         deleteButton.href = "#";
         deleteButton.addEventListener('click', (event) => {
             event.preventDefault();
-            deleteTodo(index);
+            deleteTodoAtIndex(index);
         });
 
         const priorityColor = getPriorityColor(todo.priority);
-        li.style.backgroundColor = priorityColor || 'white';
+        listItem.style.backgroundColor = priorityColor || 'white';
 
-        li.appendChild(checkbox);
-        li.appendChild(span);
-        li.appendChild(editButton);
-        li.appendChild(editPriorityButton);
-        li.appendChild(deleteButton);
-        return li;
+        listItem.appendChild(todoCheckbox);
+        listItem.appendChild(todoText);
+        listItem.appendChild(editButton);
+        listItem.appendChild(editPriorityButton);
+        listItem.appendChild(deleteButton);
+        return listItem;
     };
 
     // Función para filtrar las tareas según la búsqueda y el tipo de filtro
     const searchTodos = () => {
-        const searchKeyword = searchInput.value.trim().toLowerCase();
+        const keyword = searchInput.value.trim().toLowerCase();
 
         return todos.filter(todo => {
             const todoText = todo.todo.toLowerCase();
-            const matchesKeyword = todoText.includes(searchKeyword);
+            const matchesKeyword = todoText.includes(keyword);
 
             // Aplica el filtro de completadas o no completadas
             if (filterType === 'completed' && !todo.finished) {
@@ -177,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Función para actualizar la lista de tareas en el DOM
-    const uploadTodosList = () => {
+    const filterTodosAndRender = () => {
         todosContainer.innerHTML = '';
         const filteredTodos = searchTodos();
 
@@ -190,23 +192,23 @@ document.addEventListener("DOMContentLoaded", () => {
     // Event listener para la entrada de búsqueda
     searchInput.addEventListener('input', () => {
         searchKeyword = searchInput.value.trim().toLowerCase();
-        uploadTodosList();
+        filterTodosAndRender();
     });
 
     // Event listeners para los botones de filtro
     showAllButton.addEventListener('click', () => {
         filterType = 'all';
-        uploadTodosList();
+        filterTodosAndRender();
     });
 
     showCompletedButton.addEventListener('click', () => {
         filterType = 'completed';
-        uploadTodosList();
+        filterTodosAndRender();
     });
 
     showNotCompletedButton.addEventListener('click', () => {
         filterType = 'notCompleted';
-        uploadTodosList();
+        filterTodosAndRender();
     });
 
     // Función para obtener el color de prioridad
@@ -224,6 +226,10 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Inicializar la lista de tareas y cargar
-    todos = getTodos();
-    uploadTodosList();
+    const initialize = () => {
+        todos = getTodosFromLocalStorage();
+        filterTodosAndRender();
+    }
+
+    initialize();
 });
