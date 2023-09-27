@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
         filterTodosAndRender();
     }
 
-    // Agregar evento para agregar una nueva tarea
+    // Event listener para agregar una nueva tarea
     handleAddTodo.addEventListener('click', handleAddButtonClick);
 
     // Función para obtener la lista de tareas desde el Local Storage
@@ -93,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const editButton = document.createElement('button');
         const editPriorityButton = document.createElement('button');
         const deleteButton = document.createElement('a');
+        const editInput = document.createElement('input');
 
         // Configurar elementos y eventos aquí
         todoCheckbox.type = 'checkbox';
@@ -102,19 +103,21 @@ document.addEventListener("DOMContentLoaded", () => {
         todoText.textContent = todo.todo;
 
         editButton.textContent = 'Editar';
+
         editButton.addEventListener('click', () => {
-            editPriorityButton.type = 'text';
-            editPriorityButton.value = todo.todo;
-            editPriorityButton.addEventListener('keydown', (event) => {
+            editInput.type = 'text';
+            editInput.value = todo.todo;
+            editInput.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
-                    editTodoAtIndex(index, editPriorityButton);
+                    editTodoAtIndex(index, editInput);
                 }
             });
 
             listItem.removeChild(todoText);
             listItem.removeChild(editButton);
+            listItem.appendChild(editInput);
             listItem.appendChild(editPriorityButton);
-            editPriorityButton.focus();
+            editInput.focus();
         });
 
         editPriorityButton.textContent = 'Editar Prioridad';
@@ -155,6 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
         listItem.appendChild(editButton);
         listItem.appendChild(editPriorityButton);
         listItem.appendChild(deleteButton);
+
         return listItem;
     };
 
@@ -215,9 +219,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const getPriorityColor = (priority) => {
         switch (priority) {
             case 'low':
-                return 'green';
+                return '#47A9EB';
             case 'medium':
-                return 'yellow';
+                return '#CD5200';
             case 'high':
                 return '#CB3234';
             default:
