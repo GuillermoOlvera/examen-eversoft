@@ -92,6 +92,7 @@ li {
     padding: 5px 10px;
 }
 
+/* Estilo para el contendedor de los todo */
 #todosContainer {
     list-style-type: none;
     padding: 0;
