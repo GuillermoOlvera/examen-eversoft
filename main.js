@@ -68,19 +68,15 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Función para editar una tarea
-    const editTodoAtIndex = (index, editInput) => {
-        const updatedText = editInput.value.trim();
+    const editTodoAtIndex = (index, editForm) => {
+        const updatedText = editForm.querySelector('.edit-text').value.trim();
+        const updatedPriority = editForm.querySelector('.edit-priority').value;
+
         if (!updatedText) return;
 
         todos[index].todo = updatedText;
-        saveTodosInLocalStorage();
-        filterTodosAndRender();
-    };
-
-    // Función para editar la prioridad de una tarea
-    const editPriorityAtIndex = (index, prioritySelect) => {
-        const updatedPriority = prioritySelect.value;
         todos[index].priority = updatedPriority;
+
         saveTodosInLocalStorage();
         filterTodosAndRender();
     };
@@ -91,9 +87,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const todoCheckbox = document.createElement('input');
         const todoText = document.createElement('span');
         const editButton = document.createElement('button');
-        const editPriorityButton = document.createElement('button');
         const deleteButton = document.createElement('a');
-        const editInput = document.createElement('input');
+        const editForm = document.createElement('form');
 
         // Configurar elementos y eventos aquí
         todoCheckbox.type = 'checkbox';
@@ -105,24 +100,12 @@ document.addEventListener("DOMContentLoaded", () => {
         editButton.textContent = 'Editar';
 
         editButton.addEventListener('click', () => {
-            editInput.type = 'text';
-            editInput.value = todo.todo;
-            editInput.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter') {
-                    editTodoAtIndex(index, editInput);
-                }
-            });
-
-            listItem.removeChild(todoText);
-            listItem.removeChild(editButton);
-            listItem.appendChild(editInput);
-            listItem.appendChild(editPriorityButton);
-            editInput.focus();
-        });
-
-        editPriorityButton.textContent = 'Editar Prioridad';
-        editPriorityButton.addEventListener('click', () => {
+            const editText = document.createElement('input');
+            editText.type = 'text';
+            editText.value = todo.todo;
+            editText.classList.add('edit-text');
             const prioritySelectEdit = document.createElement('select');
+            prioritySelectEdit.classList.add('edit-priority');
             const priorities = ['low', 'medium', 'high'];
             for (const priority of priorities) {
                 const option = document.createElement('option');
@@ -131,15 +114,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 prioritySelectEdit.appendChild(option);
             }
             prioritySelectEdit.value = todo.priority;
-            prioritySelectEdit.addEventListener('change', () => {
-                editPriorityAtIndex(index, prioritySelectEdit);
+
+            const saveButton = document.createElement('button');
+            saveButton.textContent = 'Guardar';
+            saveButton.addEventListener('click', () => {
+                editTodoAtIndex(index, editForm);
             });
+
+            editForm.appendChild(editText);
+            editForm.appendChild(prioritySelectEdit);
+            editForm.appendChild(saveButton);
 
             listItem.removeChild(todoText);
             listItem.removeChild(editButton);
-            listItem.removeChild(editPriorityButton);
-            listItem.appendChild(prioritySelectEdit);
-            prioritySelectEdit.focus();
+            listItem.appendChild(editForm);
+            editText.focus();
         });
 
         deleteButton.classList.add('delete');
@@ -156,7 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
         listItem.appendChild(todoCheckbox);
         listItem.appendChild(todoText);
         listItem.appendChild(editButton);
-        listItem.appendChild(editPriorityButton);
         listItem.appendChild(deleteButton);
 
         return listItem;
