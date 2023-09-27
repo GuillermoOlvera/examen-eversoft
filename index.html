@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <!-- Configuración del documento -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
@@ -9,16 +10,19 @@
 </head>
 
 <body>
+    <!-- Contenido principal de la página -->
     <div class="container">
         <h2>Todos List</h2>
         <label for="inputNewTodo">Agregar nueva tarea:</label>
         <input type="text" id="inputNewTodo" placeholder="Ingrese una nueva tarea...">
+        <!-- Menú desplegable para seleccionar la prioridad de la tarea. -->
         <select id="prioritySelect">
             <option value="low">Baja</option>
             <option value="medium">Media</option>
             <option value="high">Alta</option>
         </select>
         <button id="handleAddTodo">Agregar</button>
+        <!-- Div que contiene botones para filtrar tareas y un campo de búsqueda. -->
         <div class="filter-buttons">
             <label for="searchInput">Filtra por palabra</label>
             <input type="text" id="searchInput" placeholder="Buscar tarea...">
@@ -26,10 +30,13 @@
             <button id="showCompleted">Mostrar completadas</button>
             <button id="showNotCompleted">Mostrar no completadas</button>
         </div>
+        <!-- Lista no ordenada (ul) que contendrá las tareas. -->
         <ul id="todosContainer"></ul>
     </div>
 
+    <!-- Script principal de la aplicación. -->
     <script type="module" src="main.js"></script>
+    <!-- Script que gestiona las operaciones relacionadas con las tareas. -->
     <script type="module" src="todos.js"></script>
 </body>
 
