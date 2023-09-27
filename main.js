@@ -219,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const getPriorityColor = (priority) => {
         switch (priority) {
             case 'low':
-                return '#47A9EB';
+                return '#12A14B';
             case 'medium':
                 return '#CD5200';
             case 'high':
